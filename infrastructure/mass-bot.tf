@@ -24,7 +24,6 @@ resource "azurerm_container_group" "fry-bot" {
 
     secure_environment_variables = {
       BOT_GATEWAY_TOKEN               = var.BOT_GATEWAY_TOKEN
-      AZURE_STORAGE_CONNECTION_STRING = azurerm_storage_account.cool-beans.primary_connection_string
     }
 
     ports {

@@ -15,12 +15,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@main
-
-    - name: 'Login via Azure CLI'
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       
     - uses: azure/docker-login@v1
       with:
@@ -47,6 +41,6 @@ jobs:
         cpu: '1'
         memory: '1.5'
         environment-variables: GITHUB_SHA=${{ github.sha }}
-        secure-environment-variables: BOT_GATEWAY_TOKEN=${{ secrets.BOT_GATEWAY_TOKEN }} AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+        secure-environment-variables: BOT_GATEWAY_TOKEN=${{ secrets.BOT_GATEWAY_TOKEN }}
         ip-address: 'Public'
         dns-name-label: 'fry-bot'
