@@ -1,0 +1,1 @@
+bot: script/start.sh
