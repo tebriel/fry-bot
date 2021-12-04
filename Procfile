@@ -1,1 +1,1 @@
-bot: script/start.sh
+bot: script/server

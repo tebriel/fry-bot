@@ -11,4 +11,4 @@ COPY setup.py /workdir/
 
 RUN pip install -e .
 
-CMD "script/start.sh"
+CMD "script/server"
