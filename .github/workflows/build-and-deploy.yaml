@@ -1,0 +1,52 @@
+name: Build and deploy a container image to Azure Web Apps
+
+on:
+  push:
+    branches:
+    - main
+
+env:
+  AZURE_WEBAPP_NAME: fry-bot
+  CONTAINER_REGISTRY: ${{ secrets.REGISTRY_URL }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@main
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.CONTAINER_REGISTRY }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Docker Build & Push to ACR
+      run: |
+          docker build . -t ${{ env.CONTAINER_REGISTRY }}/fry-bot/fry-bot:${{ github.sha }} -t ${{ env.CONTAINER_REGISTRY }}/fry-bot/fry-bot:latest
+          docker push ${{ env.CONTAINER_REGISTRY }}/fry-bot/fry-bot:${{ github.sha }}
+          docker push ${{ env.CONTAINER_REGISTRY }}/fry-bot/fry-bot:latest
+
+    - name: 'Deploy to Azure Container Instances'
+      uses: 'azure/aci-deploy@v1'
+      with:
+        resource-group: fry-bot
+        image: ${{ env.CONTAINER_REGISTRY }}/fry-bot/fry-bot:${{ github.sha }}
+        registry-login-server: ${{ env.CONTAINER_REGISTRY }}
+        registry-username: ${{ secrets.ACR_USERNAME }}
+        registry-password: ${{ secrets.ACR_PASSWORD }}
+        name: fry-bot
+        location: 'east us 2'
+        cpu: '1'
+        memory: '1.5'
+        environment-variables: GITHUB_SHA=${{ github.sha }}
+        secure-environment-variables: BOT_GATEWAY_TOKEN=${{ secrets.BOT_GATEWAY_TOKEN }} AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+        ip-address: 'Public'
+        dns-name-label: 'fry-bot'
