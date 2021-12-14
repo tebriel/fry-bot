@@ -2,7 +2,6 @@
 import os
 import hikari
 from hikari import Permissions, Intents
-from bot import cool_beans
 
 bot_permissions = (
     Permissions.VIEW_CHANNEL
@@ -33,11 +32,8 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
         await event.message.respond("Pong!")
     elif event.content.startswith(".who are you"):
         await event.message.respond(f"I am {os.getenv('GITHUB_SHA')}")
-    elif "taco johns" in event.content:
-        await event.message.add_reaction("🌮")
-        await event.message.respond("Nachos navidad?!")
-    elif event.content.startswith(".cool beans"):
-        await cool_beans.handle(event)
+    elif event.content.startswith(".rem dns"):
+        await event.message.respond("http://i.imgur.com/eAwdKEC.png")
 
 if __name__ == '__main__':
     bot.run()
