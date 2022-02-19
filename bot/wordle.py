@@ -14,6 +14,25 @@ WORDLE_PATTERN = re.compile(r'^Wordle (?P<number>\d+) (?P<score>[\dX])/6(?P<hard
 USER_PARTITION_KEY = 'user'
 SCORE_PARTITION_KEY = 'score'
 
+def is_valid_wordle(number: str) -> bool:
+    """check if a wordle number is valid."""
+
+    # Gotta be a number
+    try:
+        number = int(number)
+    except ValueError:
+        return False
+
+    # Invalid
+    if number < 0: return False
+
+    # too far in the future
+    today = datetime.utcnow()
+    days = (today - START).days
+    if number > START_ID + days + 1: return False
+
+    return True
+
 def connect() -> TableServiceClient:
     """connect to the table service."""
     return TableServiceClient.from_connection_string(
@@ -58,7 +77,8 @@ def submit_score(event: hikari.GuildMessageCreateEvent) -> None:
         'solver': data.group('solver') == '$',
         'time': event.timestamp.isoformat()
     }
-    print(entity)
+    if not is_valid_wordle(entity['number']):
+        return
     conn = connect()
     table_client = conn.get_table_client(table_name="wordle")
     try:
