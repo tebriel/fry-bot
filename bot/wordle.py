@@ -3,6 +3,11 @@ import os
 import azure
 from azure.data.tables import TableServiceClient
 import hikari
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+START = datetime(2022, 2, 19)
+START_ID = 245
 
 STORAGE_CONNECTION_STRING = os.getenv('STORAGE_CONNECTION_STRING')
 WORDLE_PATTERN = re.compile(r'^Wordle (?P<number>\d+) (?P<score>[\dX])/6(?P<hard_mode>\*?)(?P<solver>\$?)')
@@ -15,22 +20,49 @@ def connect() -> TableServiceClient:
         conn_str=STORAGE_CONNECTION_STRING
     )
 
+def get_scores(number: str = None) -> str:
+    """get the scores for a wordle."""
+    if number is None or int(number) < 0:
+        today = datetime.utcnow()
+        days = (today - START).days
+        number = START_ID + days
+    conn = connect()
+    table_client = conn.get_table_client(table_name="wordle")
+    results = defaultdict(list)
+
+    query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and number eq '{number}'"
+    try:
+        for entity in table_client.query_entities(query):
+            if 'author' not in entity:
+                continue
+            results[entity['score']].append(f"<@!{entity['author']}>")
+
+        status = f'**Wordle {number}**\n'
+        for score in sorted(results.keys()):
+            status += f"{score}/6: {', '.join(results[score])}\n"
+        return status
+    except Exception as e:
+        print(entity)
+        return f"Error: {e}"
+
 def submit_score(event: hikari.GuildMessageCreateEvent) -> None:
     """Submit a wordle score."""
     data = WORDLE_PATTERN.match(event.content)
     entity = {
         'PartitionKey': SCORE_PARTITION_KEY,
         'RowKey': f'{event.author.id}-{data.group("number")}',
+        'author': str(event.author.id),
         'score': data.group('score'),
         'number': data.group('number'),
         'hard_mode': data.group('hard_mode') == '*',
         'solver': data.group('solver') == '$',
+        'time': event.timestamp.isoformat()
     }
     print(entity)
     conn = connect()
     table_client = conn.get_table_client(table_name="wordle")
     try:
-        table_client.create_entity(entity=entity)
+        table_client.upsert_entity(entity=entity)
         return True
     except azure.core.exceptions.ResourceExistsError:
         print('Entity already exists', entity)

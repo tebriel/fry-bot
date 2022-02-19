@@ -1,5 +1,6 @@
 """Initial Module"""
 import os
+import re
 import hikari
 from hikari import Permissions, Intents
 from bot import wordle
@@ -41,6 +42,12 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
     elif wordle.WORDLE_PATTERN.match(event.content):
         if wordle.submit_score(event):
             await event.message.add_reaction("👀")
+    elif event.content.startswith(".wordle scores"):
+        number = None
+        match = re.match(r"^.wordle scores (?P<number>\d+)$", event.content)
+        if match:
+            number = match.group("number")
+        await event.message.respond(wordle.get_scores(number))
 
 if __name__ == '__main__':
     bot.run()
