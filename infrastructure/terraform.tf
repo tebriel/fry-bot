@@ -6,9 +6,17 @@ terraform {
 provider "azurerm" {
   features {}
 }
+provider "github" {
+  # Configuration options
+}
 
 terraform {
   required_providers {
+    github = {
+      source  = "integrations/github"
+      version = "4.20.0"
+    }
+
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "=2.87.0"
