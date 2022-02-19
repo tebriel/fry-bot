@@ -2,9 +2,8 @@
 import os
 import asyncio
 import hikari
-from datetime import datetime
-from hikari import Permissions, Intents
 from bot import wordle
+
 
 async def main():
     """history of channel."""
