@@ -15,7 +15,7 @@ resource "azurerm_container_group" "fry-bot" {
 
   container {
     name   = "fry-bot"
-    image  = "ghcr.io/fry-bot/fry-bot:latest"
+    image  = "ghcr.io/tebriel/fry-bot:latest"
     cpu    = "1"
     memory = "1.5"
     environment_variables = {
