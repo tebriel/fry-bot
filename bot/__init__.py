@@ -2,6 +2,7 @@
 import os
 import hikari
 from hikari import Permissions, Intents
+import wordle
 
 bot_permissions = (
     Permissions.VIEW_CHANNEL
@@ -34,6 +35,8 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
         await event.message.respond(f"I am {os.getenv('GITHUB_SHA')}")
     elif event.content.startswith(".rem dns"):
         await event.message.respond("http://i.imgur.com/eAwdKEC.png")
+    elif event.content.startswith(".list tables"):
+        await event.message.respond(wordle.list_tables())
 
 if __name__ == '__main__':
     bot.run()

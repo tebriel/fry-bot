@@ -1,2 +1,3 @@
 hikari
 azure-storage-blob
+azure-data-tables
