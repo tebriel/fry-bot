@@ -21,9 +21,8 @@ resource "azurerm_storage_table" "wordle" {
 data "azurerm_subscription" "primary" {
 }
 
-# Must manually assign because of permissions
-# resource "azurerm_role_assignment" "table-contributor" {
-#   scope                = azurerm_storage_account.fry-bot.id
-#   role_definition_name = "Storage Table Data Contributor"
-#   principal_id         = azurerm_user_assigned_identity.fry-bot.principal_id
-# }
+resource "azurerm_role_assignment" "table-contributor" {
+  scope                = azurerm_storage_account.fry-bot.id
+  role_definition_name = "Storage Table Data Contributor"
+  principal_id         = azurerm_user_assigned_identity.fry-bot.principal_id
+}
