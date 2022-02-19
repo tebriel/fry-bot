@@ -34,7 +34,7 @@ resource "azurerm_container_group" "fry-bot" {
   }
 
   identity {
-    type         = "SystemAssigned,UserAssigned"
+    type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.fry-bot.id]
   }
 
