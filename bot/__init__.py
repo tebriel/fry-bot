@@ -29,6 +29,7 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
     if event.is_bot or not event.content:
         return
 
+    print(event.content)
     if event.content.startswith("hk.ping"):
         await event.message.respond("Pong!")
     elif event.content.startswith(".who are you"):
@@ -37,6 +38,9 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
         await event.message.respond("http://i.imgur.com/eAwdKEC.png")
     elif event.content.startswith(".list tables"):
         await event.message.respond(wordle.list_tables())
+    elif wordle.WORDLE_PATTERN.match(event.content):
+        if wordle.submit_score(event):
+            await event.message.add_reaction("👀")
 
 if __name__ == '__main__':
     bot.run()
