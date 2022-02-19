@@ -20,7 +20,7 @@ def is_valid_wordle(number: str) -> bool:
     # Gotta be a number
     try:
         number = int(number)
-    except ValueError:
+    except (ValueError, TypeError):
         return False
 
     # Invalid
@@ -58,7 +58,12 @@ def get_scores(number: str = None) -> str:
         for entity in table_client.query_entities(query):
             if 'author' not in entity:
                 continue
-            results[entity['score']].append(f"<@!{entity['author']}>")
+            score = "<@!{author}>{hard_mode}{solver}".format(
+                author=entity['author'],
+                hard_mode='\*' if entity['hard_mode'] else '',
+                solver='$' if entity['solver'] else ''
+            )
+            results[entity['score']].append(score)
 
         status = f'**Wordle {number}**\n'
         for score in sorted(results.keys()):
