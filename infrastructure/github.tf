@@ -1,7 +1,7 @@
-resource "github_actions_secret" "storage-url" {
+resource "github_actions_secret" "storage-connection-string" {
   repository      = "fry-bot"
-  secret_name     = "STORAGE_BASE_URL"
-  plaintext_value = azurerm_storage_account.fry-bot.primary_table_host
+  secret_name     = "STORAGE_CONNECTION_STRING"
+  plaintext_value = azurerm_storage_account.fry-bot.primary_connection_string
 }
 
 resource "github_actions_secret" "registry-url" {

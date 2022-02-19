@@ -1,12 +1,14 @@
 import os
 from azure.data.tables import TableServiceClient
 
-STORAGE_BASE_URL = f"https://{os.getenv('STORAGE_BASE_URL')}"
+STORAGE_CONNECTION_STRING = os.getenv('STORAGE_CONNECTION_STRING')
 
 def list_tables() -> str:
     """list all the tables we can see."""
     try:
-        service = TableServiceClient(endpoint=STORAGE_BASE_URL)
+        service = TableServiceClient.from_connection_string(
+            conn_str=STORAGE_CONNECTION_STRING
+        )
         results = []
         tables = service.list_tables()
         for table in tables:
