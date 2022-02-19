@@ -34,7 +34,8 @@ resource "azurerm_container_group" "fry-bot" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type         = "SystemAssigned,UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.fry-bot.id]
   }
 
   timeouts {}
@@ -42,4 +43,10 @@ resource "azurerm_container_group" "fry-bot" {
   lifecycle {
     ignore_changes = [image_registry_credential, container]
   }
+}
+resource "azurerm_user_assigned_identity" "fry-bot" {
+  resource_group_name = azurerm_resource_group.fry-bot.name
+  location            = azurerm_resource_group.fry-bot.location
+
+  name = "fry-bot"
 }
