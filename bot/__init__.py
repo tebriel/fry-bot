@@ -2,7 +2,7 @@
 import os
 import hikari
 from hikari import Permissions, Intents
-import wordle
+from bot import wordle
 
 bot_permissions = (
     Permissions.VIEW_CHANNEL
