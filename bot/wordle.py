@@ -88,7 +88,6 @@ def submit_score(event: hikari.GuildMessageCreateEvent) -> None:
         'number': data.group('number'),
         'hard_mode': data.group('hard_mode') == '*',
         'solver': data.group('solver') == '$',
-        'time': event.timestamp.isoformat()
     }
     if not is_valid_wordle(entity['number']):
         return
