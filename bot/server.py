@@ -21,6 +21,7 @@ bot_intents = (
 
 bot = hikari.GatewayBot(token=os.getenv('BOT_GATEWAY_TOKEN'), intents=bot_intents)
 
+
 @bot.listen()
 async def ping(event: hikari.GuildMessageCreateEvent) -> None:
     """Handle ping event."""
