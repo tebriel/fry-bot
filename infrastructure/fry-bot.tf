@@ -33,6 +33,10 @@ resource "azurerm_container_group" "fry-bot" {
     }
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   timeouts {}
 
   lifecycle {
