@@ -3,6 +3,7 @@ from bot.haiku.storage import make_haiku, add_line, SEVEN, FIVE
 
 
 async def handle(event: GuildMessageCreateEvent) -> None:
+    """Handle incoming events."""
     if event.content.startswith('.haiku add_use_sevens'):
         haiku = add_line(SEVEN, event.content.replace('.haiku add_use_sevens', ''))
     elif event.content.startswith('.haiku add_use_fives'):
@@ -17,5 +18,5 @@ async def handle(event: GuildMessageCreateEvent) -> None:
         return
     elif event.content.startswith('.haiku'):
         haiku = make_haiku()
-    
+
     await event.message.respond(haiku)

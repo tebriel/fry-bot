@@ -12,5 +12,4 @@ setup(name='fry-bot',
       install_requires=[
             'hikari',
             'azure-storage-blob',
-      ],
-)
+      ])
