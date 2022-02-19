@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.0.11"
+  required_version = ">= 1.1.6"
 }
 
 # Configure the Azure Provider
@@ -14,11 +14,10 @@ terraform {
       version = "=2.87.0"
     }
   }
-
-  backend "azurerm" {
-    resource_group_name  = "terraform"
-    storage_account_name = "tebrielterraformstate"
-    container_name       = "fry-bot"
-    key                  = "terraform.tfstate"
+  cloud {
+    organization = "tebriel"
+    workspaces {
+      name = "fry-bot"
+    }
   }
 }
