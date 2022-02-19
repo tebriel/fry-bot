@@ -1,7 +1,8 @@
 """Wordle Tests."""
+from typing import Union
+
 import pytest
 from bot import wordle
-from typing import Union
 
 
 @pytest.mark.parametrize('number,expected', [
