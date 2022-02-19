@@ -15,7 +15,7 @@ resource "azurerm_container_group" "fry-bot" {
 
   container {
     name   = "fry-bot"
-    image  = "${data.azurerm_container_registry.acr.login_server}/fry-bot/fry-bot:latest"
+    image  = "ghcr.io/fry-bot/fry-bot:latest"
     cpu    = "1"
     memory = "1.5"
     environment_variables = {
@@ -31,12 +31,6 @@ resource "azurerm_container_group" "fry-bot" {
       port     = 80
       protocol = "TCP"
     }
-  }
-
-  image_registry_credential {
-    server   = data.azurerm_container_registry.acr.login_server
-    username = data.azurerm_container_registry.acr.admin_username
-    password = data.azurerm_container_registry.acr.admin_password
   }
 
   timeouts {}
