@@ -24,12 +24,14 @@ def is_valid_wordle(number: str) -> bool:
         return False
 
     # Invalid
-    if number < 0: return False
+    if number < 0:
+        return False
 
     # too far in the future
     today = datetime.utcnow()
     days = (today - START).days
-    if number > START_ID + days + 1: return False
+    if number > START_ID + days + 1:
+        return False
 
     return True
 
@@ -41,10 +43,12 @@ def connect() -> TableServiceClient:
 
 def get_scores(number: str = None) -> str:
     """get the scores for a wordle."""
-    if number is None or int(number) < 0:
+    if not is_valid_wordle(number):
+        print(number)
         today = datetime.utcnow()
         days = (today - START).days
         number = START_ID + days
+        print(number)
     conn = connect()
     table_client = conn.get_table_client(table_name="wordle")
     results = defaultdict(list)
