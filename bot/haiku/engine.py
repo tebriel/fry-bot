@@ -52,7 +52,7 @@ class Haiku:
         }
         self.client.upsert_entity(entity=entity)
         self.set_max_id(size, entity['RowKey'])
-        return self.make_haiku(entity)
+        return self.make_haiku(seed_entity=entity)
 
     def random_line(self, size: HaikuKey) -> str:
         """Get a random line."""
