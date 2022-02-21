@@ -12,6 +12,6 @@ variable "tf-api-token" {
 
 variable "tebriel-id" {
   description = "Tebriel's Object ID"
-  type = string
-  default = "5fd8e33b-c116-44b7-b73d-b0c9b568d58b"
+  type        = string
+  default     = "5fd8e33b-c116-44b7-b73d-b0c9b568d58b"
 }
