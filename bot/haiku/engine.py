@@ -13,30 +13,35 @@ class HaikuKey(Enum):
 def get_next_id(size: HaikuKey) -> int:
     """Get the next ID for a line."""
     client = connect("haiku")
-    entity = client.get_entity(partition_key=size, row_key='METADATA')
+    entity = client.get_entity(partition_key=str(size), row_key='METADATA')
     if entity is None:
         return 1
     return int(entity['max_id']) + 1
 
 
-def add_line(size: HaikuKey, text: str) -> str:
-    """Adds a line."""
+def set_max_id(key: HaikuKey, value: int) -> None:
+    """Set max id."""
     entity = {
-        'PartitionKey': size,
-        'RowKey': text
+        'PartitionKey': str(key),
+        'RowKey': 'METADATA',
+        'max_id': str(value)
     }
     client = connect("haiku")
     client.upsert_entity(entity=entity)
 
 
-def increment_beans(user_id: str, count: int) -> int:
-    """Increment beans."""
-    client = connect().get_blob_client(container, str(user_id))
-    if client.exists():
-        beans = int(client.download_blob().readall().decode())
-        client.delete_blob()
-    else:
-        beans = 0
-    beans += count
-    client.upload_blob(str(beans).encode())
-    return beans
+def add_line(size: HaikuKey, text: str) -> str:
+    """Adds a line."""
+    entity = {
+        'PartitionKey': str(size),
+        'RowKey': str(get_next_id(size)),
+        'Line': text,
+    }
+    client = connect("haiku")
+    client.upsert_entity(entity=entity)
+    return str(entity)
+
+
+def make_haiku() -> str:
+    """Make a haiku."""
+    return "a haiku"
