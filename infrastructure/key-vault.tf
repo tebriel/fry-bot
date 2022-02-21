@@ -19,3 +19,16 @@ resource "azurerm_key_vault_access_policy" "fry-bot" {
     "Get",
   ]
 }
+
+resource "azurerm_key_vault_access_policy" "tebriel" {
+  key_vault_id = azurerm_key_vault.fry-bot.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = "5fd8e33b-c116-44b7-b73d-b0c9b568d58b"
+
+  secret_permissions = [
+    "Delete",
+    "Get",
+    "Set",
+    "List"
+  ]
+}
