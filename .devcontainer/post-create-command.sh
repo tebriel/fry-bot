@@ -13,3 +13,5 @@ if [ -n "$PERSONAL_TF_API_KEY" ]; then
     terraform init
     popd
 fi
+
+pip install -e .
