@@ -1,3 +1,3 @@
 # fry-bot
 
-A [Discord](http://discord.com) bot for Pindropt
+A [Discord](http://discord.com) bot for Pindropt.
