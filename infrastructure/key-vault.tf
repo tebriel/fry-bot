@@ -10,6 +10,12 @@ resource "azurerm_key_vault" "fry-bot" {
   sku_name = "standard"
 }
 
+resource "azurerm_key_vault_secret" "bot-gateway-token" {
+  name         = "bot-gateway-token"
+  value        = var.BOT_GATEWAY_TOKEN
+  key_vault_id = azurerm_key_vault.fry-bot.id
+}
+
 resource "azurerm_key_vault_access_policy" "fry-bot" {
   key_vault_id = azurerm_key_vault.fry-bot.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
