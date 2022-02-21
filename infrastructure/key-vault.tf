@@ -17,6 +17,13 @@ resource "azurerm_key_vault_secret" "bot-gateway-token" {
   content_type = "text/plain"
 }
 
+resource "azurerm_key_vault_secret" "api-search-key" {
+  name         = "api-search-key"
+  value        = azurerm_search_service.haiku.query_keys[0].key
+  key_vault_id = azurerm_key_vault.fry-bot.id
+  content_type = "text/plain"
+}
+
 resource "azurerm_key_vault_access_policy" "fry-bot" {
   key_vault_id = azurerm_key_vault.fry-bot.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
