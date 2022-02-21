@@ -20,9 +20,7 @@ resource "azurerm_container_group" "fry-bot" {
     memory                = "1.5"
     environment_variables = {}
 
-    secure_environment_variables = {
-      BOT_GATEWAY_TOKEN = var.BOT_GATEWAY_TOKEN
-    }
+    secure_environment_variables = {}
 
     ports {
       port     = 80
