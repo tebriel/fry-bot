@@ -14,6 +14,7 @@ resource "azurerm_key_vault_secret" "bot-gateway-token" {
   name         = "bot-gateway-token"
   value        = var.BOT_GATEWAY_TOKEN
   key_vault_id = azurerm_key_vault.fry-bot.id
+  content_type = "text/plain"
 }
 
 resource "azurerm_key_vault_access_policy" "fry-bot" {
