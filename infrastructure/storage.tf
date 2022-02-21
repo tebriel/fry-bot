@@ -18,9 +18,6 @@ resource "azurerm_storage_table" "wordle" {
 }
 
 
-data "azurerm_subscription" "primary" {
-}
-
 resource "azurerm_role_assignment" "table-contributor" {
   scope                = azurerm_storage_account.fry-bot.id
   role_definition_name = "Storage Table Data Contributor"

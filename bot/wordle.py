@@ -1,15 +1,16 @@
+"""Wordle Game Library."""
 import re
-import os
-import azure
-from azure.data.tables import TableServiceClient
-import hikari
 from collections import defaultdict
 from datetime import datetime
+
+import azure
+import hikari
+from azure.identity import DefaultAzureCredential
+from azure.data.tables import TableServiceClient
 
 START = datetime(2022, 2, 19)
 START_ID = 245
 
-STORAGE_CONNECTION_STRING = os.getenv('STORAGE_CONNECTION_STRING')
 WORDLE_PATTERN = re.compile(r'^Wordle (?P<number>\d+) (?P<score>[\dX])/6(?P<hard_mode>\*?)(?P<solver>\$?)')
 USER_PARTITION_KEY = 'user'
 SCORE_PARTITION_KEY = 'score'
@@ -39,9 +40,33 @@ def is_valid_wordle(number: str) -> bool:
 
 def connect() -> TableServiceClient:
     """connect to the table service."""
-    return TableServiceClient.from_connection_string(
-        conn_str=STORAGE_CONNECTION_STRING
+    credential = DefaultAzureCredential()
+    client = TableServiceClient(
+        endpoint="https://frybot.table.core.windows.net/",
+        credential=credential
     )
+    return client
+
+
+def get_user_stats(author: str) -> str:
+    """Gets the stats for a particular author."""
+    conn = connect()
+    table_client = conn.get_table_client(table_name="wordle")
+    query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and author eq '{author}'"
+    scores = defaultdict(int)
+    try:
+        for entity in table_client.query_entities(query):
+            scores[entity['score']] += 1
+
+        played = sum(scores.values())
+        status = f'''Statistics for <@!{author}>
+Played: {played}
+Win: {(played - scores['X']) / played * 100:.2f}%
+'''
+        return status
+    except Exception as e:
+        print(entity)
+        return f"Error: {e}"
 
 
 def get_scores(number: str = None) -> str:
