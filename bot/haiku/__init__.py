@@ -12,7 +12,7 @@ async def handle(event: GuildMessageCreateEvent) -> None:
     elif event.content == '.haiku':
         result = haiku.make_haiku()
     else:
-        await event.message.respond(""".haiku add_use_fives <five-syllable-phrase>
+        await event.message.respond("""**Haiku Help**
 .haiku add_use_fives <seven-syllable-phrase>
 .haiku add_use_sevens <seven-syllable-phrase>
 .haiku (gets you a random haiku)
