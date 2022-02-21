@@ -3,10 +3,8 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
-import azure
 import hikari
-from azure.identity import DefaultAzureCredential
-from azure.data.tables import TableServiceClient
+from bot.clients.table_client import connect
 
 START = datetime(2022, 2, 19)
 START_ID = 245
@@ -38,35 +36,20 @@ def is_valid_wordle(number: str) -> bool:
     return True
 
 
-def connect() -> TableServiceClient:
-    """connect to the table service."""
-    credential = DefaultAzureCredential()
-    client = TableServiceClient(
-        endpoint="https://frybot.table.core.windows.net/",
-        credential=credential
-    )
-    return client
-
-
 def get_user_stats(author: str) -> str:
     """Gets the stats for a particular author."""
-    conn = connect()
-    table_client = conn.get_table_client(table_name="wordle")
+    table_client = connect("wordle")
     query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and author eq '{author}'"
     scores = defaultdict(int)
-    try:
-        for entity in table_client.query_entities(query):
-            scores[entity['score']] += 1
+    for entity in table_client.query_entities(query):
+        scores[entity['score']] += 1
 
-        played = sum(scores.values())
-        status = f'''Statistics for <@!{author}>
+    played = sum(scores.values())
+    status = f'''Statistics for <@!{author}>
 Played: {played}
 Win: {(played - scores['X']) / played * 100:.2f}%
 '''
-        return status
-    except Exception as e:
-        print(entity)
-        return f"Error: {e}"
+    return status
 
 
 def get_scores(number: str = None) -> str:
@@ -77,29 +60,24 @@ def get_scores(number: str = None) -> str:
         days = (today - START).days
         number = START_ID + days
         print(number)
-    conn = connect()
-    table_client = conn.get_table_client(table_name="wordle")
+    table_client = connect("wordle")
     results = defaultdict(list)
 
     query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and number eq '{number}'"
-    try:
-        for entity in table_client.query_entities(query):
-            if 'author' not in entity:
-                continue
-            score = "<@!{author}>{hard_mode}{solver}".format(
-                author=entity['author'],
-                hard_mode=r'\*' if entity['hard_mode'] else '',
-                solver='$' if entity['solver'] else ''
-            )
-            results[entity['score']].append(score)
+    for entity in table_client.query_entities(query):
+        if 'author' not in entity:
+            continue
+        score = "<@!{author}>{hard_mode}{solver}".format(
+            author=entity['author'],
+            hard_mode=r'\*' if entity['hard_mode'] else '',
+            solver='$' if entity['solver'] else ''
+        )
+        results[entity['score']].append(score)
 
-        status = f'**Wordle {number}**\n'
-        for score in sorted(results.keys()):
-            status += f"{score}/6: {', '.join(results[score])}\n"
-        return status
-    except Exception as e:
-        print(entity)
-        return f"Error: {e}"
+    status = f'**Wordle {number}**\n'
+    for score in sorted(results.keys()):
+        status += f"{score}/6: {', '.join(results[score])}\n"
+    return status
 
 
 def submit_score(event: hikari.GuildMessageCreateEvent) -> None:
@@ -116,24 +94,6 @@ def submit_score(event: hikari.GuildMessageCreateEvent) -> None:
     }
     if not is_valid_wordle(entity['number']):
         return
-    conn = connect()
-    table_client = conn.get_table_client(table_name="wordle")
-    try:
-        table_client.upsert_entity(entity=entity)
-        return True
-    except azure.core.exceptions.ResourceExistsError:
-        print('Entity already exists', entity)
-        return False
-
-
-def list_tables() -> str:
-    """list all the tables we can see."""
-    try:
-        results = []
-        tables = connect().list_tables()
-        for table in tables:
-            results.append(table.name)
-
-        return ' '.join(results)
-    except Exception as e:
-        return f"Error: {e}"
+    table_client = connect("wordle")
+    table_client.upsert_entity(entity=entity)
+    return True
