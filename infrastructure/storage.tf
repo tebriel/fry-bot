@@ -12,7 +12,7 @@ resource "azurerm_storage_table" "wordle" {
 }
 
 resource "azurerm_storage_table" "haiku" {
-  name                 = "wordle"
+  name                 = "haiku"
   storage_account_name = azurerm_storage_account.fry-bot.name
 }
 

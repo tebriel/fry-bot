@@ -7,23 +7,23 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: fry-bot
-  CONTAINER_REGISTRY: ghcr.io
+  CONTAINER_REGISTRY: ${{ secrets.REGISTRY_URL }}
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@main
+    - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579
 
     - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+      uses: azure/login@1f63701bf3e6892515f1b7ce2d2bf1708b46beaf
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       
     - name: Login to Docker Hub
-      uses: docker/login-action@v1
+      uses: docker/login-action@6af3c118c8376c675363897acf1757f7a9be6583
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -36,7 +36,7 @@ jobs:
           docker push ${{ env.CONTAINER_REGISTRY }}/tebriel/fry-bot:latest
 
     - name: 'Deploy to Azure Container Instances'
-      uses: 'azure/aci-deploy@v1.1.3'
+      uses: 'azure/aci-deploy@28cafb864979bc5b44cd1f3fd45522727eb5a3db'
       with:
         resource-group: fry-bot
         image: ${{ env.CONTAINER_REGISTRY }}/tebriel/fry-bot:${{ github.sha }}
