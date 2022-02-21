@@ -6,17 +6,15 @@ resource "azurerm_storage_account" "fry-bot" {
   account_replication_type = "LRS"
 }
 
-resource "azurerm_storage_container" "haiku" {
-  name                  = "haiku"
-  storage_account_name  = azurerm_storage_account.fry-bot.name
-  container_access_type = "private"
-}
-
 resource "azurerm_storage_table" "wordle" {
   name                 = "wordle"
   storage_account_name = azurerm_storage_account.fry-bot.name
 }
 
+resource "azurerm_storage_table" "haiku" {
+  name                 = "wordle"
+  storage_account_name = azurerm_storage_account.fry-bot.name
+}
 
 resource "azurerm_role_assignment" "table-contributor" {
   scope                = azurerm_storage_account.fry-bot.id
