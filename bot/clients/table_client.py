@@ -3,9 +3,7 @@ from azure.data.tables import TableServiceClient, TableClient
 
 def table_client() -> TableServiceClient:
     """connect to the table service."""
-    credential = DefaultAzureCredential(
-        exclude_environment_credential=True,
-        exclude_managed_identity_credential=True)
+    credential = DefaultAzureCredential()
     client = TableServiceClient(
         endpoint="https://frybot.table.core.windows.net/",
         credential=credential
