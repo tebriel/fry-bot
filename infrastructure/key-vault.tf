@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "fry-bot" {
   sku_name = "standard"
 }
 
-resource "azurerm_key_vault_access_policy" "example" {
+resource "azurerm_key_vault_access_policy" "fry-bot" {
   key_vault_id = azurerm_key_vault.fry-bot.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = azurerm_user_assigned_identity.fry-bot.client_id
