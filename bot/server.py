@@ -2,6 +2,8 @@
 import os
 import re
 import hikari
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 from hikari import Permissions, Intents
 from bot import wordle
 
@@ -19,7 +21,11 @@ bot_intents = (
     | Intents.GUILD_PRESENCES
 )
 
-bot = hikari.GatewayBot(token=os.getenv('BOT_GATEWAY_TOKEN'), intents=bot_intents)
+credential = DefaultAzureCredential()
+secret_client = SecretClient('https://fry-bot.vault.azure.net/', credential)
+secret = secret_client.get_secret('bot-gateway-token')
+
+bot = hikari.GatewayBot(token=secret.value, intents=bot_intents)
 
 
 @bot.listen()
