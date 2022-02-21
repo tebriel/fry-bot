@@ -45,6 +45,6 @@ jobs:
         cpu: '1'
         memory: '1.5'
         environment-variables: GITHUB_SHA=${{ github.sha }}
-        secure-environment-variables: BOT_GATEWAY_TOKEN=${{ secrets.BOT_GATEWAY_TOKEN }} STORAGE_CONNECTION_STRING="${{ secrets.STORAGE_CONNECTION_STRING }}"
+        secure-environment-variables: BOT_GATEWAY_TOKEN=${{ secrets.BOT_GATEWAY_TOKEN }}
         ip-address: 'Public'
         dns-name-label: 'fry-bot'

@@ -14,17 +14,14 @@ resource "azurerm_container_group" "fry-bot" {
   tags = {}
 
   container {
-    name   = "fry-bot"
-    image  = "ghcr.io/tebriel/fry-bot:latest"
-    cpu    = "1"
-    memory = "1.5"
-    environment_variables = {
-      STORAGE_BASE_URL = azurerm_storage_account.fry-bot.primary_blob_endpoint
-    }
+    name                  = "fry-bot"
+    image                 = "ghcr.io/tebriel/fry-bot:latest"
+    cpu                   = "1"
+    memory                = "1.5"
+    environment_variables = {}
 
     secure_environment_variables = {
-      BOT_GATEWAY_TOKEN         = var.BOT_GATEWAY_TOKEN
-      STORAGE_CONNECTION_STRING = azurerm_storage_account.fry-bot.primary_connection_string
+      BOT_GATEWAY_TOKEN = var.BOT_GATEWAY_TOKEN
     }
 
     ports {
