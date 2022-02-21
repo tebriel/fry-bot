@@ -3,3 +3,9 @@ variable "BOT_GATEWAY_TOKEN" {
   type        = string
   sensitive   = true
 }
+
+variable "tf-api-token" {
+  description = "API Token for Terraform"
+  type        = string
+  sensitive   = true
+}
