@@ -43,6 +43,8 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
     elif wordle.WORDLE_PATTERN.match(event.content):
         if wordle.submit_score(event):
             await event.message.add_reaction("👀")
+    elif event.content.startswith(".wordle me"):
+        await event.message.respond(wordle.get_user_stats(event.author.id))
     elif event.content.startswith(".wordle"):
         number = None
         match = re.match(r"^.wordle (scores )?(?P<number>\d+)$", event.content)
