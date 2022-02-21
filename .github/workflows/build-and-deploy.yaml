@@ -7,7 +7,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: fry-bot
-  CONTAINER_REGISTRY: ${{ secrets.REGISTRY_URL }}
+  CONTAINER_REGISTRY: ghcr.io
 
 jobs:
   build-and-deploy:
@@ -25,11 +25,11 @@ jobs:
     - name: Login to Docker Hub
       uses: docker/login-action@6af3c118c8376c675363897acf1757f7a9be6583
       with:
-        registry: ghcr.io
+        registry: ${{ env.CONTAINER_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Docker Build & Push to ACR
+    - name: Docker Build & Push to ${{ env.CONTAINER_REGISTRY }}
       run: |
           docker build . -t ${{ env.CONTAINER_REGISTRY }}/tebriel/fry-bot:${{ github.sha }} -t ${{ env.CONTAINER_REGISTRY }}/tebriel/fry-bot:latest
           docker push ${{ env.CONTAINER_REGISTRY }}/tebriel/fry-bot:${{ github.sha }}
