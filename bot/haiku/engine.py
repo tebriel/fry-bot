@@ -6,6 +6,7 @@ from typing import List
 
 import azure
 from bot.clients.table_client import connect
+from bot.clients.search_client import connect as search_connect
 
 
 class HaikuKey(Enum):
@@ -18,13 +19,23 @@ class HaikuKey(Enum):
 class Haiku:
     """Yet another Haiku Engine."""
     _client = None
+    _search_clients = None
 
     def _get_client(self):
         if self._client is None:
             self._client = connect("haiku")
         return self._client
 
+    def _get_search_clients(self):
+        if self._search_clients is None:
+            self._search_clients = [
+                search_connect('haiku-fives-index'),
+                search_connect('haiku-sevens-index'),
+            ]
+        return self._search_clients
+
     client = property(_get_client)
+    search_clients = property(_get_search_clients)
 
     def get_next_id(self, size: HaikuKey) -> int:
         """Get the next ID for a line."""
@@ -74,7 +85,7 @@ class Haiku:
         }
         self.client.upsert_entity(entity=entity)
 
-    def make_haiku(self, seed_entity=None) -> str:
+    def make_haiku(self, seed_entity = None) -> str:
         """Make a haiku."""
         lines = []
         lines.append(self.random_line(HaikuKey.FIVE))
@@ -87,3 +98,12 @@ class Haiku:
                 lines[1] = seed_entity['Line']
         self.store_haiku(lines)
         return '\n'.join(lines)
+
+    def about(self, term: str = None) -> str:
+        """Make a haiku about a term."""
+        searches = []
+        for result in [x.search(term) for x in self.search_clients]:
+            searches += list(result)
+        print(searches)
+        entity = random.choice(searches)
+        return self.make_haiku(seed_entity=entity)
