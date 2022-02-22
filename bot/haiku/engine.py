@@ -104,6 +104,8 @@ class Haiku:
         searches = []
         for result in [x.search(term) for x in self.search_clients]:
             searches += list(result)
-        print(searches)
+        if not searches:
+            return f"I don't know about \"{term}\""
+
         entity = random.choice(searches)
         return self.make_haiku(seed_entity=entity)

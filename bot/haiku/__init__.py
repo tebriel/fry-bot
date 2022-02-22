@@ -7,7 +7,7 @@ async def handle(event: GuildMessageCreateEvent) -> None:
     """Handle incoming events."""
     content = event.content.replace('.haiku ', '')
     command = content.split(' ')[0]
-    data = content.split(' ')[1:]
+    data = ' '.join(content.split(' ')[1:])
 
     if command in ['add_sevens', 'add_use_sevens']:
         result = haiku.add_line(HaikuKey.SEVEN, data)
