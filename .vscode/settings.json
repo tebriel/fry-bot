@@ -1,7 +1,19 @@
 {
 	"cSpell.words": [
 		"hikari",
+		"Moultrie",
+		"pytest",
 		"Wordle"
 	],
-	"azure.tenant": "afdb9222-952a-462e-b5a0-86d1f274830c"
+	"azure.tenant": "afdb9222-952a-462e-b5a0-86d1f274830c",
+	"python.formatting.provider": "black",
+	"python.sortImports.args": [
+        "--profile", "black"
+    ],
+	"[python]": {
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": true
+		}
+	},
+	"editor.formatOnSave": true
 }
