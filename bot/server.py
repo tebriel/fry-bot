@@ -1,11 +1,13 @@
 """Initial Module"""
 import os
 import re
+
 import hikari
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
-from hikari import Permissions, Intents
-from bot import wordle, haiku
+from hikari import Intents, Permissions
+
+from bot import haiku, wordle
 
 bot_permissions = (
     Permissions.VIEW_CHANNEL
@@ -15,15 +17,11 @@ bot_permissions = (
     | Permissions.ADD_REACTIONS
 )
 
-bot_intents = (
-    Intents.ALL_MESSAGES
-    | Intents.GUILD_EMOJIS
-    | Intents.GUILD_PRESENCES
-)
+bot_intents = Intents.ALL_MESSAGES | Intents.GUILD_EMOJIS | Intents.GUILD_PRESENCES
 
 credential = DefaultAzureCredential()
-secret_client = SecretClient('https://fry-bot.vault.azure.net/', credential)
-secret = secret_client.get_secret('bot-gateway-token')
+secret_client = SecretClient("https://fry-bot.vault.azure.net/", credential)
+secret = secret_client.get_secret("bot-gateway-token")
 
 bot = hikari.GatewayBot(token=secret.value, intents=bot_intents)
 
@@ -44,7 +42,7 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
         await event.message.respond(f"I am {os.getenv('GITHUB_SHA')}")
     elif event.content.startswith(".rem dns"):
         await event.message.respond("http://i.imgur.com/eAwdKEC.png")
-    elif event.content.startswith('.haiku'):
+    elif event.content.startswith(".haiku"):
         await haiku.handle(event)
     elif wordle.WORDLE_PATTERN.match(event.content):
         if wordle.submit_score(event):
