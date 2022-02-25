@@ -9,7 +9,7 @@ from hikari import Intents, Permissions
 
 from bot import haiku, wordle
 
-bot_permissions = (
+BOT_PERMISSIONS = (
     Permissions.VIEW_CHANNEL
     | Permissions.SEND_MESSAGES
     | Permissions.CREATE_PUBLIC_THREADS
@@ -27,13 +27,17 @@ bot = hikari.GatewayBot(token=secret.value, intents=bot_intents)
 
 
 @bot.listen()
-async def ping(event: hikari.GuildMessageCreateEvent) -> None:
-    """Handle ping event."""
-    # If a non-bot user sends a message "hk.ping", respond with "Pong!"
+async def listen(event: hikari.GuildMessageCreateEvent) -> None:
+    """Handle incoming messages."""
+    # If a non-bot user sends a message
     # We check there is actually content first, if no message content exists,
     # we would get `None' here.
     if event.is_bot or not event.content:
         return
+    if os.getenv("ENVIRONMENT") != "production":
+        if str(event.guild_id) != "916058877722779698":
+            print(event.guild_id)
+            return
 
     print(event.content)
     if event.content.startswith("hk.ping"):
@@ -44,14 +48,5 @@ async def ping(event: hikari.GuildMessageCreateEvent) -> None:
         await event.message.respond("http://i.imgur.com/eAwdKEC.png")
     elif event.content.startswith(".haiku"):
         await haiku.handle(event)
-    elif wordle.WORDLE_PATTERN.match(event.content):
-        if wordle.submit_score(event):
-            await event.message.add_reaction("👀")
-    elif event.content.startswith(".wordle me"):
-        await event.message.respond(wordle.get_user_stats(event.author.id))
-    elif event.content.startswith(".wordle"):
-        number = None
-        match = re.match(r"^.wordle (scores )?(?P<number>\d+)$", event.content)
-        if match:
-            number = match.group("number")
-        await event.message.respond(wordle.get_scores(number), user_mentions=False)
+    elif wordle.should_handle(event):
+        await wordle.handle(event)

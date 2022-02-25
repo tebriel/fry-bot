@@ -3,7 +3,7 @@ from typing import Union
 
 import pytest
 
-from bot import wordle
+from bot.wordle.engine import Wordle
 
 
 @pytest.mark.parametrize(
@@ -20,4 +20,4 @@ from bot import wordle
 )
 def test_is_valid_wordle(number: Union[str, bool], expected):
     """Test is_valid_wordle."""
-    assert wordle.is_valid_wordle(number) == expected
+    assert Wordle.is_valid_wordle(number) == expected
