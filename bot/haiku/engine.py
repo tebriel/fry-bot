@@ -2,7 +2,7 @@ import json
 import random
 from datetime import datetime
 from enum import Enum
-from typing import List
+from typing import List, Union
 
 import azure
 
@@ -48,7 +48,7 @@ class Haiku:
             return 0
         return int(entity.get("max_id", -1)) + 1
 
-    def set_max_id(self, key: HaikuKey, value: int) -> None:
+    def set_max_id(self, key: HaikuKey, value: Union[int, str]) -> None:
         """Set max id."""
         entity = {"PartitionKey": str(key), "RowKey": "METADATA", "max_id": str(value)}
         self.client.upsert_entity(entity=entity)

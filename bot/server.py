@@ -36,7 +36,6 @@ async def listen(event: hikari.GuildMessageCreateEvent) -> None:
         return
     if os.getenv("ENVIRONMENT") != "production":
         if str(event.guild_id) != "916058877722779698":
-            print(event.guild_id)
             return
 
     print(event.content)

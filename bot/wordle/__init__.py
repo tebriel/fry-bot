@@ -8,13 +8,17 @@ wordle = Wordle()
 
 def should_handle(event: GuildMessageCreateEvent) -> bool:
     """Should this event be handled?"""
-    return bool(event.content.startswith(".wordle") or WORDLE_PATTERN.match(
+    return bool(
         event.content
-    ))
+        and (event.content.startswith(".wordle") or WORDLE_PATTERN.match(event.content))
+    )
 
 
 async def handle(event: GuildMessageCreateEvent) -> None:
     """Handle incoming events."""
+    if event.content is None:
+        return
+
     content = event.content.replace(".wordle", "").strip()
     command = content.split(" ")[0]
 
@@ -22,7 +26,7 @@ async def handle(event: GuildMessageCreateEvent) -> None:
         if wordle.submit_score(event):
             await event.message.add_reaction("👀")
     elif command in ["me"]:
-        await event.message.respond(wordle.get_user_stats(event.author.id))
+        await event.message.respond(wordle.get_user_stats(str(event.author.id)))
     elif wordle.is_valid_wordle(command) or command == "":
         await event.message.respond(wordle.get_scores(command), user_mentions=False)
     else:

@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generator, TypeVar
+from typing import Any, Callable, Generator, Optional, TypeVar
 
 from azure.data.tables import TableClient, TableServiceClient
 from azure.identity import DefaultAzureCredential
@@ -24,18 +24,18 @@ def connect(table: str) -> TableClient:
 class DataConnection:
     """Manage a connection to the StorageTable."""
 
-    _table_client: TableClient = None
+    _table_client: Optional[TableClient] = None
 
     def __init__(self, client: TableClient = None):
         if client is not None:
             self._table_client = client
 
-    def _get_table_client(self):
+    @property
+    def table_client(self) -> TableClient:
+        """Gets the table client."""
         if self._table_client is None:
             self._table_client = connect("wordle")
         return self._table_client
-
-    table_client: TableClient = property(_get_table_client)
 
     def save(self, entity: dict[str, Any]):
         """Save an entity."""

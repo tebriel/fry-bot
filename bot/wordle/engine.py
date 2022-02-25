@@ -22,12 +22,12 @@ class Wordle:
     """A wordle client."""
 
     @staticmethod
-    def is_valid_wordle(number: str) -> bool:
+    def is_valid_wordle(input_num: Union[int, str]) -> bool:
         """check if a wordle number is valid."""
 
         # Gotta be a number
         try:
-            number = int(number)
+            number = int(input_num)
         except (ValueError, TypeError):
             return False
 
@@ -58,9 +58,9 @@ Win: {(played - scores['X']) / played * 100:.2f}%
         return status
 
     @classmethod
-    def get_scores(cls, number: Union[int, str] = None) -> str:
+    def get_scores(cls, number: Union[int, str, None] = None) -> str:
         """get the scores for a wordle."""
-        if not cls.is_valid_wordle(number):
+        if number is None or not cls.is_valid_wordle(number):
             today = datetime.utcnow()
             days = (today - START).days
             number = START_ID + days
@@ -81,9 +81,14 @@ Win: {(played - scores['X']) / played * 100:.2f}%
         return status
 
     @classmethod
-    def submit_score(cls, event: hikari.GuildMessageCreateEvent) -> None:
+    def submit_score(cls, event: hikari.GuildMessageCreateEvent) -> bool:
         """Submit a wordle score."""
+        if event.content is None:
+            return False
+
         data = WORDLE_PATTERN.match(event.content)
+        if data is None:
+            return False
         score = WordleScore(
             author=str(event.author.id),
             score=data.group("score"),

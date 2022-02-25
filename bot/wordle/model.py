@@ -45,19 +45,21 @@ class WordleScore:
             data_client = conn
         return data_client.query(WordleScore.from_storage_table, query)
 
-    @staticmethod
-    def query_by_number(number: Union[str, int], data_client: DataConnection = None):
+    @classmethod
+    def query_by_number(
+        cls, number: Union[str, int], data_client: DataConnection = None
+    ):
         """Query all scores by number."""
         query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and number eq '{number}'"
-        return __class__.query(query, data_client)
+        return cls.query(query, data_client)
 
-    @staticmethod
+    @classmethod
     def query_by_author(
-        author: Union[str, Snowflake], data_client: DataConnection = None
+        cls, author: Union[str, Snowflake], data_client: DataConnection = None
     ):
         """Query all scores by number."""
         query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and number eq '{author}'"
-        return __class__.query(query, data_client)
+        return cls.query(query, data_client)
 
     def to_storage_dict(self):
         """Convert to a dict."""
