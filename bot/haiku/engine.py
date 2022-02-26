@@ -1,24 +1,12 @@
 import random
 from typing import List
 
-from bot.clients.search_client import connect as search_connect
 from bot.haiku.models import FormedHaiku, HaikuKey, HaikuLine, HaikuMetadata
+from bot.haiku.search import HaikuSearch
 
 
 class Haiku:
     """Yet another Haiku Engine."""
-
-    _search_clients = None
-
-    def _get_search_clients(self):
-        if self._search_clients is None:
-            self._search_clients = [
-                search_connect("haiku-fives-index"),
-                search_connect("haiku-sevens-index"),
-            ]
-        return self._search_clients
-
-    search_clients = property(_get_search_clients)
 
     def add_line(self, size: HaikuKey, text: str, author: str = "") -> str:
         """Adds a line."""
@@ -53,28 +41,26 @@ class Haiku:
         )
         entity.save()
 
-    def make_haiku(self, seed_entity: HaikuLine = None) -> str:
+    @classmethod
+    def make_haiku(cls, seed_entity: HaikuLine = None) -> str:
         """Make a haiku."""
         lines: List[str] = [
-            self.random_line(HaikuKey.FIVE),
-            self.random_line(HaikuKey.SEVEN),
-            self.random_line(HaikuKey.FIVE),
+            cls.random_line(HaikuKey.FIVE),
+            cls.random_line(HaikuKey.SEVEN),
+            cls.random_line(HaikuKey.FIVE),
         ]
         if seed_entity is not None:
             if seed_entity.size == HaikuKey.FIVE:
                 lines[random.choice([0, 2])] = seed_entity.line
             else:
                 lines[1] = seed_entity.line
-        self.store_haiku(lines)
+        cls.store_haiku(lines)
         return "\n".join(lines)
 
-    def about(self, term: str = None) -> str:
+    @classmethod
+    def about(cls, term: str = None) -> str:
         """Make a haiku about a term."""
-        searches = []
-        for result in [x.search(term) for x in self.search_clients]:
-            searches += list(result)
-        if not searches:
-            return f'I don\'t know about "{term}"'
+        searches = HaikuSearch.search(term=term)
 
         entity = random.choice(searches)
-        return self.make_haiku(seed_entity=entity)
+        return cls.make_haiku(seed_entity=entity)

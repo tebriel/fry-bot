@@ -17,7 +17,7 @@ class FormedHaiku:
 
     def __init__(self, **kwargs):
         """Initialize the model."""
-        self.created_at = kwargs.get("created_at", datetime.utcnow())
+        self.created_at = kwargs.get("created_at") or datetime.utcnow()
         self.poem = kwargs["poem"]
 
     @property
@@ -58,6 +58,6 @@ class FormedHaiku:
         """Convert to a dict."""
         return {
             "PartitionKey": str(HaikuKey.FORMED),
-            "RowKey": self.created_at,
+            "RowKey": self.created_at.isoformat(),
             "Poem": json.dumps(self.poem),
         }

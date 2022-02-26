@@ -1,6 +1,7 @@
 from hikari.events.message_events import GuildMessageCreateEvent
 
-from bot.haiku.engine import Haiku, HaikuKey
+from bot.haiku.engine import Haiku
+from bot.haiku.models import HaikuKey
 
 haiku = Haiku()
 
