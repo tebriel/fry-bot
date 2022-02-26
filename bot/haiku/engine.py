@@ -1,10 +1,8 @@
-import json
 import random
-from datetime import datetime
 from typing import List
 
 from bot.clients.search_client import connect as search_connect
-from bot.haiku.model import HaikuKey, HaikuLine, HaikuMetadata
+from bot.haiku.models import FormedHaiku, HaikuKey, HaikuLine, HaikuMetadata
 
 
 class Haiku:
@@ -33,33 +31,35 @@ class Haiku:
         entity.save()
         return self.make_haiku(seed_entity=entity)
 
-    def random_line(self, size: HaikuKey) -> str:
+    @staticmethod
+    def random_line(size: HaikuKey) -> str:
         """Get a random line."""
         metadata = HaikuMetadata.get(size=size)
         max_id = metadata.max_id
         if max_id <= 0:
             return "no data found"
         row_key = random.randint(0, max_id)
-        entity = self.client.get_entity(partition_key=str(size), row_key=str(row_key))
-        return entity["Line"]
+        entity = HaikuLine.get(size=size, id_=row_key)
+        if entity is None:
+            return "line not found in store"
+        return entity.line
 
-    def store_haiku(self, lines: List[str], c_date: str = None) -> None:
+    @staticmethod
+    def store_haiku(lines: List[str], c_date: str = None) -> None:
         """Store a haiku."""
-        if c_date is None:
-            c_date = datetime.utcnow().isoformat()
-        entity = {
-            "PartitionKey": str(HaikuKey.FORMED),
-            "RowKey": c_date,
-            "Poem": json.dumps(lines),
-        }
-        self.client.upsert_entity(entity=entity)
+        entity = FormedHaiku(
+            created_at=c_date,
+            poem=lines,
+        )
+        entity.save()
 
     def make_haiku(self, seed_entity: HaikuLine = None) -> str:
         """Make a haiku."""
-        lines = []
-        lines.append(self.random_line(HaikuKey.FIVE))
-        lines.append(self.random_line(HaikuKey.SEVEN))
-        lines.append(self.random_line(HaikuKey.FIVE))
+        lines: List[str] = [
+            self.random_line(HaikuKey.FIVE),
+            self.random_line(HaikuKey.SEVEN),
+            self.random_line(HaikuKey.FIVE),
+        ]
         if seed_entity is not None:
             if seed_entity.size == HaikuKey.FIVE:
                 lines[random.choice([0, 2])] = seed_entity.line

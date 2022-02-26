@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generator, Optional, TypeVar, Union
+from typing import Any, Callable, Generator, Optional, TypeVar
 
 import azure
 from azure.data.tables import TableClient, TableServiceClient
@@ -58,7 +58,7 @@ class DataConnection:
 
     def get(
         self, partition_key: str, row_key: str, hydrator: Callable[[dict], ModelType]
-    ) -> Union[ModelType, None]:
+    ) -> Optional[ModelType]:
         """Get an entity."""
         try:
             entity = self.table_client.get_entity(partition_key, row_key)
