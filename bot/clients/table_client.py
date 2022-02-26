@@ -1,5 +1,6 @@
-from typing import Any, Callable, Generator, Optional, TypeVar
+from typing import Any, Callable, Generator, Optional, TypeVar, Union
 
+import azure
 from azure.data.tables import TableClient, TableServiceClient
 from azure.identity import DefaultAzureCredential
 
@@ -24,17 +25,24 @@ def connect(table: str) -> TableClient:
 class DataConnection:
     """Manage a connection to the StorageTable."""
 
+    _table: str = ""
     _table_client: Optional[TableClient] = None
 
-    def __init__(self, client: TableClient = None):
+    def __init__(self, table: str, client: TableClient = None):
         if client is not None:
             self._table_client = client
+        self._table = table
+
+    @property
+    def table(self) -> str:
+        """Get the table name."""
+        return self._table
 
     @property
     def table_client(self) -> TableClient:
         """Gets the table client."""
         if self._table_client is None:
-            self._table_client = connect("wordle")
+            self._table_client = connect(self.table)
         return self._table_client
 
     def save(self, entity: dict[str, Any]):
@@ -47,3 +55,13 @@ class DataConnection:
         """Query the table."""
         for result in self.table_client.query_entities(query):
             yield hydrator(result)
+
+    def get(
+        self, partition_key: str, row_key: str, hydrator: Callable[[dict], ModelType]
+    ) -> Union[ModelType, None]:
+        """Get an entity."""
+        try:
+            entity = self.table_client.get_entity(partition_key, row_key)
+            return hydrator(entity)
+        except azure.core.exceptions.ResourceNotFoundError:
+            return None

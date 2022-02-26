@@ -8,7 +8,7 @@ from bot.clients.table_client import DataConnection
 USER_PARTITION_KEY = "user"
 SCORE_PARTITION_KEY = "score"
 
-conn = DataConnection()
+conn = DataConnection("wordle")
 
 
 @dataclass
