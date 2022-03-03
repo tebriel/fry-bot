@@ -51,7 +51,7 @@ class FormedHaiku:
         """Convert from a storage table row."""
         return FormedHaiku(
             created_at=datetime.fromisoformat(row["RowKey"]),
-            poem=json.loads(row["poem"]),
+            poem=json.loads(row["Poem"]),
         )
 
     def to_storage_dict(self):

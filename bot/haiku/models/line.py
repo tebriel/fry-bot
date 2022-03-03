@@ -10,7 +10,7 @@ from .metadata import HaikuMetadata
 class LineStorageFormat(TypedDict):
     """Data representation of a line."""
 
-    PartitionKey: HaikuKey
+    PartitionKey: str
     RowKey: str
     Author: str
     Line: str
