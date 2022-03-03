@@ -14,11 +14,14 @@ resource "azurerm_container_group" "fry-bot" {
   tags = {}
 
   container {
-    name                  = "fry-bot"
-    image                 = "ghcr.io/tebriel/fry-bot:latest"
-    cpu                   = "1"
-    memory                = "1.5"
-    environment_variables = {}
+    name   = "fry-bot"
+    image  = "ghcr.io/tebriel/fry-bot:latest"
+    cpu    = "1"
+    memory = "1.5"
+    environment_variables = {
+      "ENVIRONMENT" = "production"
+      "GITHUB_SHA"  = "unknown"
+    }
 
     secure_environment_variables = {}
 

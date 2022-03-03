@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 
 from bot.haiku.engine import Haiku
+from bot.haiku.models import FormedHaiku
 
 if __name__ == "__main__":
     with gzip.open("./seeds/haiku_db.json.gz") as db:
@@ -17,4 +18,4 @@ if __name__ == "__main__":
         c_date = datetime.strptime(line["date"], "%b %d %Y %H:%M:%S")
         print(line["date"], c_date.isoformat())
 
-        h.store_haiku(line["poem"], c_date=c_date.isoformat())
+        FormedHaiku(poem=line["poem"], created_at=c_date.isoformat()).save()

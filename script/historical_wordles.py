@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 import asyncio
-import os
 
 import hikari
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-from bot import wordle
+from bot.wordle.engine import WORDLE_PATTERN, Wordle
 
 credential = DefaultAzureCredential()
 secret_client = SecretClient("https://fry-bot.vault.azure.net/", credential)
+wordle = Wordle()
 
 
 async def main():
@@ -27,7 +27,7 @@ async def main():
                 print("empty msg")
                 continue
             print(msg.content)
-            if wordle.WORDLE_PATTERN.match(msg.content):
+            if WORDLE_PATTERN.match(msg.content):
                 print(msg.content)
                 if wordle.submit_score(msg):
                     print(f"added msg: {msg}")

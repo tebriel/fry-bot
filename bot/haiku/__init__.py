@@ -1,12 +1,16 @@
 from hikari.events.message_events import GuildMessageCreateEvent
 
-from bot.haiku.engine import Haiku, HaikuKey
+from bot.haiku.engine import Haiku
+from bot.haiku.models import HaikuKey
 
 haiku = Haiku()
 
 
 async def handle(event: GuildMessageCreateEvent) -> None:
     """Handle incoming events."""
+    if event.content is None:
+        return
+
     content = event.content.replace(".haiku ", "")
     command = content.split(" ")[0]
     data = " ".join(content.split(" ")[1:])
@@ -30,4 +34,4 @@ async def handle(event: GuildMessageCreateEvent) -> None:
         )
         return
 
-    await event.message.respond(result)
+    await event.message.respond("\n".join(result.poem))

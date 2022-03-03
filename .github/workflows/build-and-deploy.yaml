@@ -44,7 +44,7 @@ jobs:
         location: 'east us 2'
         cpu: '1'
         memory: '1.5'
-        environment-variables: GITHUB_SHA=${{ github.sha }}
+        environment-variables: GITHUB_SHA=${{ github.sha }} ENVIRONMENT=production
         secure-environment-variables: ''
         ip-address: 'Public'
         dns-name-label: 'fry-bot'
