@@ -61,7 +61,9 @@ class DataConnection:
     ) -> Optional[ModelType]:
         """Get an entity."""
         try:
-            entity = self.table_client.get_entity(partition_key, row_key)
+            entity = self.table_client.get_entity(
+                partition_key=partition_key, row_key=row_key
+            )
             return hydrator(entity)
         except azure.core.exceptions.ResourceNotFoundError:
             return None

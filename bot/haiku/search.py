@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 from bot.clients.search_client import SearchClient
 from bot.clients.search_client import connect as search_connect
 from bot.haiku.models import HaikuKey, HaikuLine
@@ -7,8 +5,6 @@ from bot.haiku.models import HaikuKey, HaikuLine
 
 class HaikuSearch:
     """Finds HaikuLines from the database."""
-
-    clients: ClassVar[dict[HaikuKey, SearchClient]]
 
     @property
     @classmethod
@@ -25,12 +21,12 @@ class HaikuSearch:
     @classmethod
     def search(cls, term: str, size: HaikuKey = None) -> list[HaikuLine]:
         """Search for lines."""
-        clients = cls.clients.values()
+        search_clients = cls.clients.values()
         if size is not None:
-            clients = cls.clients[size]
+            search_clients = cls.clients[size]
 
         results = []
-        for result_set in [x.search(term) for x in clients]:
+        for result_set in [x.search(term) for x in search_clients]:
             for result in result_set:
                 results.append(HaikuLine.from_storage_table(result))
         return results

@@ -36,7 +36,7 @@ class FormedHaiku:
     def get(cls, created_at: datetime) -> "FormedHaiku":
         """Get the metadata for a given size."""
         entity = cls.client.get(
-            partition_key=str(HaikuKey.FORMED),
+            partition_key=HaikuKey.FORMED.value,
             row_key=created_at.isoformat(),
             hydrator=cls.from_storage_table,
         )
@@ -57,7 +57,7 @@ class FormedHaiku:
     def to_storage_dict(self):
         """Convert to a dict."""
         return {
-            "PartitionKey": str(HaikuKey.FORMED),
+            "PartitionKey": HaikuKey.FORMED.value,
             "RowKey": self.created_at.isoformat(),
             "Poem": json.dumps(self.poem),
         }

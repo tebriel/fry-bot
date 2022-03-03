@@ -8,7 +8,7 @@ from bot.haiku.search import HaikuSearch
 class Haiku:
     """Yet another Haiku Engine."""
 
-    def add_line(self, size: HaikuKey, text: str, author: str = "") -> str:
+    def add_line(self, size: HaikuKey, text: str, author: str = "") -> FormedHaiku:
         """Adds a line."""
 
         entity = HaikuLine(
@@ -55,8 +55,10 @@ class Haiku:
         return entity
 
     @classmethod
-    def about(cls, term: str = None) -> str:
+    def about(cls, term: str = None) -> FormedHaiku:
         """Make a haiku about a term."""
+        if term is None:
+            term = ""
         searches = HaikuSearch.search(term=term)
         if not searches:
             return f"I don't know about {term}"

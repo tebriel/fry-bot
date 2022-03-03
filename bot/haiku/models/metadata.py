@@ -1,8 +1,18 @@
 from dataclasses import dataclass
+from http.client import NotConnected
+from typing import TypedDict
 
 from bot.clients.table_client import DataConnection
 
 from .key import HaikuKey
+
+
+class MetdataStorageFormat(TypedDict):
+    """Data representation of a line."""
+
+    PartitionKey: str
+    RowKey: str
+    MaxID: int
 
 
 @dataclass
@@ -15,24 +25,27 @@ class HaikuMetadata:
     ROW_KEY = "METADATA"
 
     @property
-    @classmethod
-    def client(cls) -> DataConnection:
+    @staticmethod
+    def client() -> DataConnection:
         """Get the data client."""
-        return getattr(cls, "__client", None)
+        result = getattr(HaikuMetadata, "__client", None)
+        if result is None:
+            raise NotConnected("No client available")
+        return result
 
     @client.setter
-    @classmethod
-    def client(cls, client: DataConnection):
+    @staticmethod
+    def client(client: DataConnection):
         """Set the data client."""
-        setattr(cls, "__client", client)
+        setattr(HaikuMetadata, "__client", client)
 
-    @classmethod
-    def get(cls, size: HaikuKey) -> "HaikuMetadata":
+    @staticmethod
+    def get(size: HaikuKey) -> "HaikuMetadata":
         """Get the metadata for a given size."""
-        entity = cls.client.get(
-            partition_key=str(size),
-            row_key=cls.ROW_KEY,
-            hydrator=cls.from_storage_table,
+        entity = HaikuMetadata.client.get(
+            partition_key=size.value,
+            row_key=HaikuMetadata.ROW_KEY,
+            hydrator=HaikuMetadata.from_storage_table,
         )
         if entity is None:
             entity = HaikuMetadata(size=size, max_id=0)
@@ -40,26 +53,23 @@ class HaikuMetadata:
 
     def save(self) -> None:
         """Save the model to the table."""
-        __class__.client.save(self.to_storage_dict())
+        HaikuMetadata.client.save(self.to_storage_dict())
 
     @staticmethod
     def from_storage_table(row) -> "HaikuMetadata":
         """Convert from a storage table row."""
-        if row["PartitionKey"].endswith("FIVE"):
-            size = HaikuKey.FIVE
-        else:
-            size = HaikuKey.SEVEN
+        size = HaikuKey(row["PartitionKey"])
         return HaikuMetadata(
             size=size,
-            max_id=int(row.get("max_id", 0)),
+            max_id=int(row.get("MaxID", 0)),
         )
 
-    def to_storage_dict(self):
+    def to_storage_dict(self) -> MetdataStorageFormat:
         """Convert to a dict."""
         return {
-            "PartitionKey": str(self.size),
+            "PartitionKey": self.size.value,
             "RowKey": self.ROW_KEY,
-            "max_id": self.max_id,
+            "MaxID": self.max_id,
         }
 
     def increment_id(self) -> int:

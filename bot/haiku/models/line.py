@@ -1,10 +1,19 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TypedDict
 
 from bot.clients.table_client import DataConnection
 
 from .key import HaikuKey
 from .metadata import HaikuMetadata
+
+
+class LineStorageFormat(TypedDict):
+    """Data representation of a line."""
+
+    PartitionKey: HaikuKey
+    RowKey: str
+    Author: str
+    Line: str
 
 
 @dataclass
@@ -45,10 +54,7 @@ class HaikuLine:
     @staticmethod
     def from_storage_table(row) -> "HaikuLine":
         """Convert from a storage table row."""
-        if row["PartitionKey"].endswith("FIVE"):
-            size = HaikuKey.FIVE
-        else:
-            size = HaikuKey.SEVEN
+        size = HaikuKey(row["PartitionKey"])
         return HaikuLine(
             size=size,
             id_=int(row["RowKey"]),
@@ -65,16 +71,16 @@ class HaikuLine:
     def get(cls, size: HaikuKey, id_: int) -> Optional["HaikuLine"]:
         """Get the metadata for a given size."""
         entity = cls.client.get(
-            partition_key=str(size),
+            partition_key=size.value,
             row_key=str(id_),
             hydrator=cls.from_storage_table,
         )
         return entity
 
-    def to_storage_dict(self):
+    def to_storage_dict(self) -> LineStorageFormat:
         """Convert to a dict."""
         return {
-            "PartitionKey": str(self.size),
+            "PartitionKey": self.size.value,
             "RowKey": str(self.id_),
             "Author": self.author,
             "Line": self.line,

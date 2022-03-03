@@ -34,4 +34,4 @@ async def handle(event: GuildMessageCreateEvent) -> None:
         )
         return
 
-    await event.message.respond(result)
+    await event.message.respond("\n".join(result.poem))
