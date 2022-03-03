@@ -93,8 +93,8 @@ Win: {(played - scores['X']) / played * 100:.2f}%
             author=str(event.author.id),
             score=data.group("score"),
             number=data.group("number"),
-            hard_mode=data.group("hard_mode") is not None,
-            solver=data.group("solver") is not None,
+            hard_mode=data.group("hard_mode") != "",
+            solver=data.group("solver") != "",
         )
         if not cls.is_valid_wordle(score.number):
             return False
