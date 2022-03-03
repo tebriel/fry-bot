@@ -8,8 +8,6 @@ from bot.clients.table_client import DataConnection
 USER_PARTITION_KEY = "user"
 SCORE_PARTITION_KEY = "score"
 
-conn = DataConnection("wordle")
-
 
 @dataclass
 class WordleScore:
@@ -21,11 +19,21 @@ class WordleScore:
     hard_mode: bool
     solver: bool
 
-    def save(self, data_client: DataConnection = None) -> None:
+    @property
+    @classmethod
+    def client(cls) -> DataConnection:
+        """Get the data client."""
+        return getattr(cls, "__client", None)
+
+    @client.setter
+    @classmethod
+    def client(cls, client: DataConnection):
+        """Set the data client."""
+        setattr(cls, "__client", client)
+
+    def save(self) -> None:
         """Save the score to the table."""
-        if data_client is None:
-            data_client = conn
-        data_client.save(self.to_storage_dict())
+        __class__.client.save(self.to_storage_dict())
 
     @staticmethod
     def from_storage_table(row) -> "WordleScore":
@@ -39,27 +47,21 @@ class WordleScore:
         )
 
     @staticmethod
-    def query(query: str, data_client: DataConnection = None):
+    def query(query: str):
         """Query the table."""
-        if data_client is None:
-            data_client = conn
-        return data_client.query(WordleScore.from_storage_table, query)
+        return __class__.client.query(WordleScore.from_storage_table, query)
 
     @classmethod
-    def query_by_number(
-        cls, number: Union[str, int], data_client: DataConnection = None
-    ):
+    def query_by_number(cls, number: Union[str, int]):
         """Query all scores by number."""
         query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and number eq '{number}'"
-        return cls.query(query, data_client)
+        return cls.query(query)
 
     @classmethod
-    def query_by_author(
-        cls, author: Union[str, Snowflake], data_client: DataConnection = None
-    ):
+    def query_by_author(cls, author: Union[str, Snowflake]):
         """Query all scores by number."""
         query = f"PartitionKey eq '{SCORE_PARTITION_KEY}' and number eq '{author}'"
-        return cls.query(query, data_client)
+        return cls.query(query)
 
     def to_storage_dict(self):
         """Convert to a dict."""
@@ -72,3 +74,7 @@ class WordleScore:
             "hard_mode": self.hard_mode,
             "solver": self.solver,
         }
+
+
+conn = DataConnection("wordle")
+WordleScore.client = conn
