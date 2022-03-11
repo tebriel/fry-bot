@@ -16,6 +16,11 @@ resource "azurerm_storage_table" "haiku" {
   storage_account_name = azurerm_storage_account.fry-bot.name
 }
 
+resource "azurerm_storage_table" "rem" {
+  name                 = "rem"
+  storage_account_name = azurerm_storage_account.fry-bot.name
+}
+
 resource "azurerm_role_assignment" "table-contributor" {
   for_each = toset([
     azurerm_user_assigned_identity.fry-bot.principal_id,
