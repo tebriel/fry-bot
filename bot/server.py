@@ -44,7 +44,7 @@ async def listen(event: hikari.GuildMessageCreateEvent) -> None:
     elif event.content.startswith(".who are you"):
         await event.message.respond(f"I am {os.getenv('GITHUB_SHA')}")
     elif rem.should_handle(event):
-        rem.handle(event)
+        await rem.handle(event)
     # elif event.content.startswith(".rem dns"):
     #     await event.message.respond("http://i.imgur.com/eAwdKEC.png")
     elif event.content.startswith(".haiku"):

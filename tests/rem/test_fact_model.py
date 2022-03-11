@@ -8,15 +8,15 @@ def test_from_storage_table(fact):
     today = datetime.utcnow()
     entity = {
         "PartitionKey": PARTITION_KEY,
-        "RowKey": "123123123",
-        "Name": "dns",
+        "RowKey": "dns",
+        "Author": "123123123",
         "Fact": "https://i.imgur.com/eAwdKEC.png",
         "CreatedAt": today.isoformat(),
     }
     actual = fact.from_storage_table(entity)
-    assert actual.author == entity["RowKey"]
+    assert actual.author == entity["Author"]
     assert actual.created_at == today
-    assert actual.author == entity["RowKey"]
+    assert actual.name == entity["RowKey"]
     assert actual.fact == entity["Fact"]
 
 
@@ -30,10 +30,8 @@ def test_to_storage_dict(fact):
     result = actual.to_storage_dict()
     assert result == {
         "PartitionKey": PARTITION_KEY,
-        "RowKey": "test-1",
-        "author": "test",
-        "score": 1,
-        "number": 1,
-        "hard_mode": False,
-        "solver": True,
+        "RowKey": "dns",
+        "Author": "123123123",
+        "Fact": "https://i.imgur.com/eAwdKEC.png",
+        "CreatedAt": actual.created_at.isoformat(),
     }

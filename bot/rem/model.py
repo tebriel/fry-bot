@@ -19,7 +19,7 @@ class Fact:
     created_at: datetime
 
     def __init__(self, **args):
-        self.author = args.get("author", "")
+        self.author = str(args.get("author", ""))
         self.name = args.get("name", "")
         self.fact = args.get("fact", "")
         self.created_at = args.get("created_at", datetime.utcnow())

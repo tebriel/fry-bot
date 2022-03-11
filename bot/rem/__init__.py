@@ -25,11 +25,12 @@ async def handle(event: GuildMessageCreateEvent) -> None:
 .rem help (this help)"""
         )
     elif fact == "":
-        f_data = Fact.query_by_name(name)
-        if f_data is None:
+        facts = "\n".join([f.fact for f in Fact.query_by_name(name)])
+
+        if facts == "":
             await event.message.respond(f"I don't know about {name}.")
         else:
-            await event.message.respond(f_data.fact)
+            await event.message.respond(facts)
     else:
         entity = Fact(author=event.author, name=name, fact=fact)
         entity.save()
