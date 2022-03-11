@@ -7,7 +7,7 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from hikari import Intents, Permissions
 
-from bot import haiku, wordle
+from bot import haiku, rem, wordle
 
 BOT_PERMISSIONS = (
     Permissions.VIEW_CHANNEL
@@ -43,8 +43,10 @@ async def listen(event: hikari.GuildMessageCreateEvent) -> None:
         await event.message.respond("Pong!")
     elif event.content.startswith(".who are you"):
         await event.message.respond(f"I am {os.getenv('GITHUB_SHA')}")
-    elif event.content.startswith(".rem dns"):
-        await event.message.respond("http://i.imgur.com/eAwdKEC.png")
+    elif rem.should_handle(event):
+        rem.handle(event)
+    # elif event.content.startswith(".rem dns"):
+    #     await event.message.respond("http://i.imgur.com/eAwdKEC.png")
     elif event.content.startswith(".haiku"):
         await haiku.handle(event)
     elif wordle.should_handle(event):
