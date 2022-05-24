@@ -29,6 +29,19 @@ resource "azurerm_container_group" "fry-bot" {
       port     = 80
       protocol = "TCP"
     }
+
+  }
+
+  diagnostics {
+    log_analytics {
+      log_type      = "ContainerInstanceLogs"
+      workspace_id  = azurerm_log_analytics_workspace.fry-bot.id
+      workspace_key = azurerm_log_analytics_workspace.fry-bot.primary_shared_key
+      metadata = {
+        "container_name"  = "fry-bot"
+        "container_image" = "ghcr.io/tebriel/fry-bot:latest"
+      }
+    }
   }
 
   identity {
