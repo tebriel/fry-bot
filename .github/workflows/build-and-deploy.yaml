@@ -48,6 +48,3 @@ jobs:
         secure-environment-variables: ''
         ip-address: 'Public'
         dns-name-label: 'fry-bot'
-        log-analytics-workspace: 'd840f85d-a50e-4e6c-b31c-61c29b88f374'
-        log-type: 'ContainerInstanceLogs'
-        log-analytics-workspace-key: '$${ secrets.WORKSPACE_KEY }}'
