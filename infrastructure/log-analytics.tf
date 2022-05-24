@@ -5,6 +5,10 @@ resource "azurerm_log_analytics_workspace" "fry-bot" {
   sku                        = "PerGB2018"
   retention_in_days          = 30
   daily_quota_gb             = 0.5
-  internet_ingestion_enabled = false
-  internet_query_enabled     = false
+}
+
+resource "github_actions_secret" "workspace-key" {
+  repository      = "fry-bot"
+  secret_name     = "WORKSPACE_KEY"
+  plaintext_value = azurerm_log_analytics_workspace.fry-bot.primary_shared_key
 }
